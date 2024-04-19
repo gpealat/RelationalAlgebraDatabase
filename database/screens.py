@@ -1,14 +1,22 @@
 import csv
 import sqlite3
+import configparser
+from database.db_creation import create_db_path
+
+config = configparser.ConfigParser()
+config.read('SETUP.INI')
 
 def fill_screens_table():
-    screens_file = "./data/screens.csv"
+    """Function that fills the SCREEN table with data
+    """
+    screens_file = f'./{config["DATA"]["Folder"]}/screens.csv'
 
     # Read the screens file
     with open(screens_file, newline='') as csvfile:
         screenreader = csv.reader(csvfile, delimiter=",")
 
-        con = sqlite3.connect("./database/sql_exercices.db")
+        db_path = create_db_path()
+        con = sqlite3.connect(db_path)
         cur = con.cursor()
 
         # For each movie add it in the table

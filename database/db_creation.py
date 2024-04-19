@@ -1,8 +1,28 @@
 import sqlite3
+import os.path
+import configparser
+
+config = configparser.ConfigParser()
+config.read('SETUP.INI')
+
+def create_db_path()->str:
+    return f'./{config["DATABASE"]["Folder"]}/{config["DATABASE"]["Name"]}'
 
 def create_db():
-    con = sqlite3.connect("./database/sql_exercices.db")
+    """Function to initialize the database for the exercises
+    """
 
+    # Create the path for the database file
+    db_path = create_db_path()
+
+    # Checking if the DB already exists
+    if os.path.isfile(db_path):
+        # Delete the file
+        os.remove(db_path)
+
+    # Create a connection to the DB.
+    con = sqlite3.connect(db_path)
+    # Create a cursor to run the query
     cur = con.cursor()
 
     # CINEMA (CinemaName, Phone, Street)
@@ -42,7 +62,7 @@ def create_db():
                 );
     """)
 
-    # Missing table ACTORS(ActorName)
+    # Creating a Missing table ACTORS(ActorName) in the data model
     cur.execute("""CREATE TABLE ACTORS(
                     ActorName TEXT NOT NULL PRIMARY KEY
     );
@@ -58,5 +78,7 @@ def create_db():
                     FOREIGN KEY (ActorName) REFERENCES ACTORS(ActorName)
                 );
     """)
+    # Commit the changes to make them persistent
     con.commit()
+    # Close the connection
     con.close()

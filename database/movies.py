@@ -1,16 +1,22 @@
-# MOVIE (Title, Country, Director, Year)
-
 import csv
 import sqlite3
+import configparser
+from database.db_creation import create_db_path
+
+config = configparser.ConfigParser()
+config.read('SETUP.INI')
 
 def fill_movies_table():
-    movie_file = "./data/movies.csv"
+    """Function that fills the MOVIE table with data
+    """
+    movie_file = f'./{config["DATA"]["Folder"]}/movies.csv'
 
     # Read the movie file
     with open(movie_file, newline='') as csvfile:
         moviereader = csv.reader(csvfile, delimiter=",")
 
-        con = sqlite3.connect("./database/sql_exercices.db")
+        db_path = create_db_path()
+        con = sqlite3.connect(db_path)
         cur = con.cursor()
 
         # For each movie add it in the table
